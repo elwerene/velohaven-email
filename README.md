@@ -46,5 +46,5 @@ The template contains the body which will be sent to the email address.
 
 ### Example template names:
 
- * `0 weeks - Welcome.html` - is send on the day the user is added. The subject is `Welcome`.
+ * `1 day - Welcome.html` - is send on the day the user is added. The subject is `Welcome`.
  * `1 week - Reminder.html` - is send 1 week after the user is added. The subject is `Reminder`.
