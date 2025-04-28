@@ -33,7 +33,7 @@ password = "dev123"
 # Nextcloud folder format
 
 The Nextcloud folder should contain the following files/folders:
-- `liste.txt`: A text file containing the list of email addresses and dates. Each line should contain an email address and a date in the format `YYYY-MM-DD`
+- `emails.txt`: A text file containing the list of email addresses and dates. Each line should contain an email address and a date in the format `YYYY-MM-DD`
 - `templates`: A folder containing the email templates
 
 ## Template

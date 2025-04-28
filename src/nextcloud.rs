@@ -34,12 +34,12 @@ pub async fn get() -> Result<Data> {
         .build()?;
 
     let list = client
-        .get("liste.txt")
+        .get("emails.txt")
         .await
-        .context("Could not get liste.txt")?
+        .context("Could not get emails.txt")?
         .text()
         .await
-        .context("Could not get body from liste.txt")?;
+        .context("Could not get body from emails.txt")?;
     let members: Vec<Member> = list
         .lines()
         .filter_map(|line| {
