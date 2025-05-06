@@ -8,6 +8,7 @@ The configuration file is a toml file that contains the following fields:
 - `email`: The email configuration
 - `min_date`: Emails which where added before this date will treated as added on this date. The date format is `YYYY-MM-DD`
 
+TODO: Access for csv file
 
 ## Email configuration
 
@@ -35,7 +36,8 @@ password = "dev123"
 # Nextcloud folder format
 
 The Nextcloud folder should contain the following files/folders:
-- `emails.txt`: A text file containing the list of email addresses and dates. Each line should contain an email address and a date in the format `YYYY-MM-DD`
+TODO: unsubscribe.txt instead of emails.txt
+- `unsubscribed.txt`: A text file containing the list of email addresses which unsubscribed from the list. Each line should contain an email address
 - `templates`: A folder containing the email templates
 
 ## Template
