@@ -6,6 +6,8 @@ The configuration file is a toml file that contains the following fields:
 - `server`: The Nextcloud server hostname
 - `username`: The username to use for authentication (cryptic part of share url)
 - `email`: The email configuration
+- `min_date`: Emails which where added before this date will treated as added on this date. The date format is `YYYY-MM-DD`
+
 
 ## Email configuration
 

@@ -46,8 +46,10 @@ async fn main() {
             continue;
         };
 
+        let start_at = member.added_at.max(CONFIG.min_date);
+
         for template in &data.templates {
-            if today == member.added_at + template.duration {
+            if today == start_at + template.duration {
                 log::info!(
                     "Sending email to {} with template \"{}\"",
                     member.email,

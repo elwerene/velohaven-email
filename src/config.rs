@@ -1,3 +1,4 @@
+use chrono::NaiveDate;
 use once_cell::sync::Lazy;
 use serde::Deserialize;
 
@@ -11,6 +12,7 @@ pub static CONFIG: Lazy<Config> = Lazy::new(|| {
 pub struct Config {
     pub server: String,
     pub username: String,
+    pub min_date: NaiveDate,
     pub email: EmailConfig,
 }
 
