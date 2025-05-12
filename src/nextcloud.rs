@@ -2,6 +2,7 @@ use anyhow::{Context, Result};
 use chrono::Duration;
 use reqwest_dav::{Auth, ClientBuilder, Depth, list_cmd::ListEntity};
 use serde::Deserialize;
+use std::collections::HashSet;
 use url_encor::Encoder;
 
 #[derive(Debug, Deserialize)]
@@ -20,7 +21,7 @@ pub struct Template {
 
 #[derive(Debug)]
 pub struct NextcloudData {
-    pub unsubscribed: Vec<String>,
+    pub unsubscribed: HashSet<String>,
     pub templates: Vec<Template>,
 }
 
@@ -41,7 +42,7 @@ impl NextcloudConfig {
             .text()
             .await
             .context("Could not get body from unsubscribed.txt")?;
-        let unsubscribed: Vec<String> = list
+        let unsubscribed: HashSet<String> = list
             .lines()
             .filter_map(|line| {
                 let email = line.trim().to_lowercase();
