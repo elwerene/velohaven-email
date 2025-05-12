@@ -11,19 +11,19 @@ The configuration file is a toml file that contains the following fields:
 
 ## CleverReach configuration
 
-The CleverReach configuration is contains the following fields:
+The CleverReach configuration contains the following fields:
 - `client_id`: The CleverReach Client ID
 - `client_secret`: The CleverReach Client Secret
 
 ## Nextcloud configuration
 
-The Nextcloud configuration is contains the following fields:
+The Nextcloud configuration contains the following fields:
 - `server`: The Nextcloud server hostname
 - `username`: The username to use for authentication (cryptic part of share url)
 
 ## Email configuration
 
-The email configuration is contains the following fields:
+The email configuration contains the following fields:
 - `host`: The SMTP server hostname
 - `username`: The username to use for authentication
 - `password`: The password to use for authentication
