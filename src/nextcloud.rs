@@ -6,7 +6,7 @@ use std::collections::HashSet;
 use url_encor::Encoder;
 
 #[derive(Debug, Deserialize)]
-pub struct NextcloudConfig {
+pub struct Nextcloud {
     pub server: String,
     pub username: String,
 }
@@ -25,7 +25,7 @@ pub struct NextcloudData {
     pub templates: Vec<Template>,
 }
 
-impl NextcloudConfig {
+impl Nextcloud {
     pub async fn get_data(&self) -> Result<NextcloudData> {
         let client = ClientBuilder::new()
             .set_host(format!(

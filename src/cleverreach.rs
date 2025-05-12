@@ -9,7 +9,7 @@ use serde::Deserialize;
 use std::time::Duration;
 
 #[derive(Debug, Deserialize)]
-pub struct CleverreachConfig {
+pub struct Cleverreach {
     client_id: String,
     client_secret: String,
     group_id: String,
@@ -21,7 +21,7 @@ pub struct Member {
     pub added_at: NaiveDate,
 }
 
-impl CleverreachConfig {
+impl Cleverreach {
     pub async fn get_members(&self) -> Result<Vec<Member>> {
         let token_json = tokio::fs::read_to_string("token.json").await.ok();
         let mut token_result = token_json.and_then(|json| {

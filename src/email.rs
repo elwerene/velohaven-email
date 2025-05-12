@@ -8,7 +8,7 @@ use lettre::{
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
-pub struct EmailConfig {
+pub struct Email {
     from: String,
     #[serde(default)]
     to_overwrite: Option<String>,
@@ -17,7 +17,7 @@ pub struct EmailConfig {
     password: String,
 }
 
-impl EmailConfig {
+impl Email {
     pub async fn send_emails(
         &self,
         nextcloud_data: NextcloudData,

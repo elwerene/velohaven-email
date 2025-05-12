@@ -1,4 +1,4 @@
-use crate::{cleverreach::CleverreachConfig, email::EmailConfig, nextcloud::NextcloudConfig};
+use crate::{cleverreach::Cleverreach, email::Email, nextcloud::Nextcloud};
 use chrono::NaiveDate;
 use once_cell::sync::Lazy;
 use serde::Deserialize;
@@ -12,7 +12,7 @@ pub static CONFIG: Lazy<Config> = Lazy::new(|| {
 #[derive(Deserialize, Debug)]
 pub struct Config {
     pub min_date: NaiveDate,
-    pub cleverreach: CleverreachConfig,
-    pub email: EmailConfig,
-    pub nextcloud: NextcloudConfig,
+    pub cleverreach: Cleverreach,
+    pub email: Email,
+    pub nextcloud: Nextcloud,
 }
