@@ -3,12 +3,23 @@ This project is meant to run once a day via a cron job. It will download the cur
 # Configuration
 
 The configuration file is a toml file that contains the following fields:
-- `server`: The Nextcloud server hostname
-- `username`: The username to use for authentication (cryptic part of share url)
+
+- `cleverreach`: The CleverReach configuration
+- `nextcloud`: The Nextcloud configuration
 - `email`: The email configuration
 - `min_date`: Emails which where added before this date will treated as added on this date. The date format is `YYYY-MM-DD`
 
-TODO: Access for csv file
+## CleverReach configuration
+
+The CleverReach configuration is contains the following fields:
+- `client_id`: The CleverReach Client ID
+- `client_secret`: The CleverReach Client Secret
+
+## Nextcloud configuration
+
+The Nextcloud configuration is contains the following fields:
+- `server`: The Nextcloud server hostname
+- `username`: The username to use for authentication (cryptic part of share url)
 
 ## Email configuration
 
@@ -22,6 +33,14 @@ The email configuration is contains the following fields:
 ## Example configuration
 
 ```toml
+min_date = "2025-05-12"
+
+[cleverreach]
+client_id = "CleverReach Client ID"
+client_secret = "CleverReach Client Secret"
+group_id = "CleverReach Group ID"
+
+[nextcloud]
 server = "nextcloud.example.com"
 username = "Token from share link"
 
@@ -36,7 +55,6 @@ password = "dev123"
 # Nextcloud folder format
 
 The Nextcloud folder should contain the following files/folders:
-TODO: unsubscribe.txt instead of emails.txt
 - `unsubscribed.txt`: A text file containing the list of email addresses which unsubscribed from the list. Each line should contain an email address
 - `templates`: A folder containing the email templates
 
