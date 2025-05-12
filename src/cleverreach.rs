@@ -96,7 +96,7 @@ impl CleverreachConfig {
 
         let receivers = http_client
             .get(format!(
-                "https://rest.cleverreach.com/v3/groups/{}/receivers",
+                "https://rest.cleverreach.com/v3/groups/{}/receivers?pagesize=5000",
                 self.group_id
             ))
             .bearer_auth(token.access_token().secret())
