@@ -14,6 +14,7 @@ The configuration file is a toml file that contains the following fields:
 The CleverReach configuration contains the following fields:
 - `client_id`: The CleverReach Client ID
 - `client_secret`: The CleverReach Client Secret
+- `group_id`: The CleverReach Group ID
 
 ## Nextcloud configuration
 
