@@ -1,5 +1,6 @@
 use anyhow::{Context, Result};
 use chrono::Duration;
+use humanize_duration::prelude::DurationExt;
 use reqwest_dav::{Auth, ClientBuilder, Depth, list_cmd::ListEntity};
 use serde::Deserialize;
 use std::collections::HashSet;
@@ -53,6 +54,8 @@ impl Nextcloud {
             })
             .collect();
 
+        log::info!("Entries in unsubscribed.txt: {}", unsubscribed.len());
+
         let entries = client.list("templates", Depth::Number(1)).await?;
         let mut templates = vec![];
         for entry in entries {
@@ -105,6 +108,19 @@ impl Nextcloud {
                 });
             }
         }
+
+        log::info!(
+            "Templates:\n\t{}",
+            templates
+                .iter()
+                .map(|t| format!(
+                    "{}: {}",
+                    t.duration.human(humanize_duration::Truncate::Millis),
+                    t.subject
+                ))
+                .collect::<Vec<_>>()
+                .join("\n\t")
+        );
 
         Ok(NextcloudData {
             unsubscribed,
