@@ -106,6 +106,12 @@ impl CleverreachConfig {
             .json::<Vec<CleverreachReceiver>>()
             .await?;
 
+        log::info!(
+            "Received {} receivers from cleverreach ({} are deactivated)",
+            receivers.len(),
+            receivers.iter().filter(|r| r.deactivated != 0).count()
+        );
+
         let members = receivers
             .into_iter()
             .filter(|receiver| receiver.deactivated == 0)
