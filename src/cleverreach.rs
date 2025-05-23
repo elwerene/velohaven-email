@@ -118,7 +118,7 @@ impl Cleverreach {
             .filter(|receiver| {
                 if receiver.email == "rene@reshx.de" {
                     skip_until_broken_email = true;
-                    false
+                    true
                 } else {
                     skip_until_broken_email
                 }
