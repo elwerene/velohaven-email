@@ -3,7 +3,10 @@ use anyhow::{Context, Result};
 use lettre::{
     AsyncSmtpTransport, AsyncTransport, Tokio1Executor,
     message::{Mailbox, header::ContentType},
-    transport::smtp::authentication::Credentials,
+    transport::smtp::{
+        authentication::Credentials,
+        client::{Tls, TlsParameters},
+    },
 };
 use serde::Deserialize;
 
@@ -13,6 +16,7 @@ pub struct Email {
     #[serde(default)]
     to_overwrite: Option<String>,
     host: String,
+    port: Option<u16>,
     username: String,
     password: String,
 }
@@ -23,13 +27,18 @@ impl Email {
         nextcloud_data: NextcloudData,
         members: Vec<Member>,
     ) -> Result<()> {
-        let mailer = AsyncSmtpTransport::<Tokio1Executor>::relay(&self.host)
+        let mut builder = AsyncSmtpTransport::<Tokio1Executor>::relay(&self.host)
             .context("Could not create async smtp transport")?
             .credentials(Credentials::new(
                 self.username.clone(),
                 self.password.clone(),
-            ))
-            .build();
+            ));
+        if let Some(port) = self.port {
+            builder = builder.port(port).tls(Tls::Required(
+                TlsParameters::new(self.host.clone()).context("Could not create tls parameters")?,
+            ));
+        }
+        let mailer = builder.build();
         log::info!("Testing connection to SMTP server");
         if !mailer
             .test_connection()
