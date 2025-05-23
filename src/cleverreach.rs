@@ -112,8 +112,17 @@ impl Cleverreach {
             receivers.iter().filter(|r| r.deactivated != 0).count()
         );
 
+        let mut skip_until_broken_email = false;
         let members = receivers
             .into_iter()
+            .filter(|receiver| {
+                if receiver.email == "rene@reshx.de" {
+                    skip_until_broken_email = true;
+                    false
+                } else {
+                    skip_until_broken_email
+                }
+            })
             .filter(|receiver| receiver.deactivated == 0)
             .filter_map(|receiver| {
                 let added_at = match Utc.timestamp_opt(receiver.activated, 0) {
