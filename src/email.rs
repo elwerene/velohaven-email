@@ -30,6 +30,7 @@ impl Email {
                 self.password.clone(),
             ))
             .build();
+        log::info!("Testing connection to SMTP server");
         if !mailer
             .test_connection()
             .await
@@ -37,6 +38,7 @@ impl Email {
         {
             anyhow::bail!("Could not connect to SMTP server");
         }
+        log::info!("Connection to SMTP server successful");
 
         let to_overwrite: Option<Mailbox> = match self.to_overwrite.as_ref() {
             Some(email) => {
