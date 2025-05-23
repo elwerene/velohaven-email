@@ -103,7 +103,9 @@ impl Email {
 
                     match mailer.send(email).await {
                         Ok(_) => log::info!("Email sent to {to}"),
-                        Err(err) => anyhow::bail!("Could not send email: {err:?}"),
+                        Err(err) => {
+                            log::error!("Could not send email to {to}: {err:?}");
+                        }
                     }
                 }
             }
