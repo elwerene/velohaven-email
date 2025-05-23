@@ -1,6 +1,5 @@
 use anyhow::{Context, Result};
 use chrono::Duration;
-use humanize_duration::prelude::DurationExt;
 use reqwest_dav::{Auth, ClientBuilder, Depth, list_cmd::ListEntity};
 use serde::Deserialize;
 use std::collections::HashSet;
@@ -17,6 +16,7 @@ pub struct Template {
     pub body: String,
     pub name: String,
     pub subject: String,
+    pub duration_str: String,
     pub duration: Duration,
 }
 
@@ -71,11 +71,11 @@ impl Nextcloud {
                 };
                 let name = name.url_decode();
                 let mut parts = name.split('-');
-                let Some(duration) = parts.next() else {
+                let Some(duration_str) = parts.next() else {
                     log::error!("Could not get duration from name {name}");
                     continue;
                 };
-                let duration = match parse_duration::parse(duration) {
+                let duration = match parse_duration::parse(duration_str) {
                     Err(err) => {
                         log::error!("Could not parse duration from name {name}: {err:?}");
                         continue;
@@ -101,6 +101,7 @@ impl Nextcloud {
                     .await
                     .with_context(|| format!("Could not get body from file {name}.html"))?;
                 templates.push(Template {
+                    duration_str: duration_str.to_string(),
                     body,
                     name,
                     subject,
@@ -113,11 +114,7 @@ impl Nextcloud {
             "Templates:\n\t{}",
             templates
                 .iter()
-                .map(|t| format!(
-                    "{}: {}",
-                    t.duration.human(humanize_duration::Truncate::Millis),
-                    t.subject
-                ))
+                .map(|t| format!("{}: {}", t.duration_str, t.subject))
                 .collect::<Vec<_>>()
                 .join("\n\t")
         );
