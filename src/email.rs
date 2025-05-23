@@ -30,6 +30,14 @@ impl Email {
                 self.password.clone(),
             ))
             .build();
+        if !mailer
+            .test_connection()
+            .await
+            .context("Could not connect to SMTP server")?
+        {
+            anyhow::bail!("Could not connect to SMTP server");
+        }
+
         let to_overwrite: Option<Mailbox> = match self.to_overwrite.as_ref() {
             Some(email) => {
                 let email = email
