@@ -87,11 +87,12 @@ impl Cleverreach {
             .await
             .context("Could not write token to file")?;
 
-        #[derive(Deserialize)]
+        #[derive(Deserialize, Debug, Default)]
+        #[serde(default)]
         struct CleverreachReceiver {
             email: String,
             activated: i64,
-            deactivated: i64,
+            active: bool,
         }
 
         let receivers = http_client
@@ -109,12 +110,12 @@ impl Cleverreach {
         log::info!(
             "Received {} receivers from cleverreach ({} are deactivated)",
             receivers.len(),
-            receivers.iter().filter(|r| r.deactivated != 0).count()
+            receivers.iter().filter(|r| !r.active).count()
         );
 
         let members = receivers
             .into_iter()
-            .filter(|receiver| receiver.deactivated == 0)
+            .filter(|receiver| receiver.active)
             .filter_map(|receiver| {
                 let added_at = match Utc.timestamp_opt(receiver.activated, 0) {
                     chrono::LocalResult::None => {
