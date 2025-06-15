@@ -63,7 +63,9 @@ impl Email {
             }
         };
         let from: Mailbox = self.from.parse().context("Could not parse from email")?;
-        let today = chrono::Utc::now().date_naive();
+        let today = CONFIG
+            .now_date
+            .unwrap_or_else(|| chrono::Utc::now().date_naive());
         for member in members {
             log::info!("Member: {member:?}");
 

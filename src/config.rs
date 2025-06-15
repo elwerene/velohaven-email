@@ -12,6 +12,7 @@ pub static CONFIG: Lazy<Config> = Lazy::new(|| {
 #[derive(Deserialize, Debug)]
 pub struct Config {
     pub min_date: NaiveDate,
+    pub now_date: Option<NaiveDate>,
     pub cleverreach: Cleverreach,
     pub email: Email,
     pub nextcloud: Nextcloud,
