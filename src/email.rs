@@ -66,9 +66,8 @@ impl Email {
         let today = CONFIG
             .now_date
             .unwrap_or_else(|| chrono::Utc::now().date_naive());
+        log::info!("Today's date: {today}");
         for member in members {
-            log::info!("Member: {member:?}");
-
             if nextcloud_data.unsubscribed.contains(&member.email) {
                 log::info!("Member {} is unsubscribed", member.email);
                 continue;
@@ -80,6 +79,12 @@ impl Email {
             };
 
             let start_at = member.added_at.max(CONFIG.min_date);
+            log::info!(
+                "Member {} added at {} (start_at: {})",
+                member.email,
+                member.added_at,
+                start_at
+            );
 
             for template in &nextcloud_data.templates {
                 if today == start_at + template.duration {
