@@ -1,5 +1,6 @@
 use std::time::Duration;
 
+use anyhow::Context;
 use config::CONFIG;
 use env_logger::Env;
 
@@ -10,14 +11,39 @@ mod nextcloud;
 
 #[tokio::main]
 async fn main() {
+    panic!("{:?}", CONFIG.email);
     let default_panic = std::panic::take_hook();
     std::panic::set_hook(Box::new(move |info| {
         default_panic(info);
         std::process::exit(1);
     }));
-
     env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
 
+    match collect_data_and_send_emails().await {
+        Ok(count) => {
+            log::info!(
+                "Data collection and email sending completed successfully. Sent {} emails.",
+                count
+            );
+            CONFIG
+                .email
+                .send_digest(Ok(count))
+                .await
+                .expect("Failed to send digest email");
+        }
+        Err(e) => {
+            log::error!("An error occurred: {}", e);
+            CONFIG
+                .email
+                .send_digest(Err(e))
+                .await
+                .expect("Failed to send digest email");
+            std::process::exit(1);
+        }
+    }
+}
+
+async fn collect_data_and_send_emails() -> anyhow::Result<usize> {
     let mut tries = 0;
     let members = loop {
         tries += 1;
@@ -27,11 +53,10 @@ async fn main() {
             }
             Err(e) => {
                 if tries >= 100 {
-                    log::error!(
+                    anyhow::bail!(
                         "Failed to get members from CleverReach after 100 attempts: {}",
                         e
                     );
-                    std::process::exit(1);
                 }
                 log::error!("Failed to get members from CleverReach: {}", e);
                 tokio::time::sleep(Duration::from_secs(10)).await;
@@ -64,5 +89,5 @@ async fn main() {
         .email
         .send_emails(nextcloud_data, members)
         .await
-        .expect("Failed to send emails");
+        .context("Failed to send emails")
 }

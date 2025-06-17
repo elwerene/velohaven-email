@@ -15,6 +15,8 @@ pub struct Email {
     from: String,
     #[serde(default)]
     to_overwrite: Option<String>,
+    #[serde(default)]
+    digest: Vec<String>,
     host: String,
     port: Option<u16>,
     username: String,
@@ -22,11 +24,7 @@ pub struct Email {
 }
 
 impl Email {
-    pub async fn send_emails(
-        &self,
-        nextcloud_data: NextcloudData,
-        members: Vec<Member>,
-    ) -> Result<()> {
+    pub async fn mailer(&self) -> Result<AsyncSmtpTransport<Tokio1Executor>> {
         let mut builder = AsyncSmtpTransport::<Tokio1Executor>::relay(&self.host)
             .context("Could not create async smtp transport")?
             .credentials(Credentials::new(
@@ -48,6 +46,50 @@ impl Email {
             anyhow::bail!("Could not connect to SMTP server");
         }
         log::info!("Connection to SMTP server successful");
+        Ok(mailer)
+    }
+
+    pub async fn send_digest(&self, res: Result<usize>) -> Result<()> {
+        let mailer = self.mailer().await?;
+        let from: Mailbox = self.from.parse().context("Could not parse from email")?;
+        let subject = format!(
+            "Velohaven Mailer am {}: {}",
+            CONFIG
+                .now_date
+                .unwrap_or_else(|| chrono::Utc::now().date_naive()),
+            if res.is_ok() { "Erfolg" } else { "Fehler" }
+        );
+        let body = match res {
+            Ok(count) => format!("Erfolg: Es wurden heute {count} Emails versendet."),
+            Err(err) => format!("Fehler: {err}"),
+        };
+
+        for receiver in self.digest.iter() {
+            log::info!("Sending digest email to: {}", receiver);
+            let email = lettre::Message::builder()
+                .header(ContentType::TEXT_HTML)
+                .from(from.clone())
+                .to(receiver.parse().context("Could not parse digest email")?)
+                .subject(subject.clone())
+                .body(body.clone())
+                .context("Could not create digest email")?;
+
+            mailer
+                .send(email)
+                .await
+                .context("Could not send digest email")?;
+            log::info!("Digest email sent successfully");
+        }
+
+        Ok(())
+    }
+
+    pub async fn send_emails(
+        &self,
+        nextcloud_data: NextcloudData,
+        members: Vec<Member>,
+    ) -> Result<usize> {
+        let mailer = self.mailer().await?;
 
         let to_overwrite: Option<Mailbox> = match self.to_overwrite.as_ref() {
             Some(email) => {
@@ -67,6 +109,7 @@ impl Email {
             .now_date
             .unwrap_or_else(|| chrono::Utc::now().date_naive());
         log::info!("Today's date: {today}");
+        let mut count = 0;
         for member in members {
             if nextcloud_data.unsubscribed.contains(&member.email) {
                 log::info!("Member {} is unsubscribed", member.email);
@@ -109,7 +152,10 @@ impl Email {
                     };
 
                     match mailer.send(email).await {
-                        Ok(_) => log::info!("Email sent to {to}"),
+                        Ok(_) => {
+                            log::info!("Email sent to {to}");
+                            count += 1;
+                        }
                         Err(err) => {
                             log::error!("Could not send email to {to}: {err:?}");
                         }
@@ -118,6 +164,6 @@ impl Email {
             }
         }
 
-        Ok(())
+        Ok(count)
     }
 }
