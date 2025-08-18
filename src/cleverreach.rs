@@ -6,7 +6,6 @@ use oauth2::{
     basic::{BasicClient, BasicTokenType},
 };
 use serde::Deserialize;
-use std::time::Duration;
 
 #[derive(Debug, Deserialize)]
 pub struct Cleverreach {
@@ -46,20 +45,16 @@ impl Cleverreach {
             .build()?;
 
         if let Some(token) = &token_result {
-            if let Some(expires_in) = token.expires_in() {
-                if expires_in < Duration::from_secs(60 * 60 * 48) {
-                    token_result = Some(
-                        client
-                            .exchange_refresh_token(
-                                token
-                                    .refresh_token()
-                                    .ok_or_else(|| anyhow::format_err!("No refresh token found"))?,
-                            )
-                            .request_async(&http_client)
-                            .await?,
-                    );
-                }
-            }
+            token_result = Some(
+                client
+                    .exchange_refresh_token(
+                        token
+                            .refresh_token()
+                            .ok_or_else(|| anyhow::format_err!("No refresh token found"))?,
+                    )
+                    .request_async(&http_client)
+                    .await?,
+            );
         } else {
             let (auth_url, _csrf_token) = client.authorize_url(CsrfToken::new_random).url();
 
@@ -133,6 +128,7 @@ impl Cleverreach {
             })
             .collect::<Vec<_>>();
 
+        panic!("Members: {:?}", members);
         Ok(members)
     }
 }
