@@ -128,7 +128,6 @@ impl Cleverreach {
             })
             .collect::<Vec<_>>();
 
-        panic!("Members: {:?}", members);
         Ok(members)
     }
 }
