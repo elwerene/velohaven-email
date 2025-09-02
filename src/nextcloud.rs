@@ -11,7 +11,7 @@ pub struct Nextcloud {
     pub username: String,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub struct Template {
     pub body: String,
     pub name: String,

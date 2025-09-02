@@ -50,6 +50,11 @@ impl Email {
     }
 
     pub async fn send_digest(&self, res: Result<usize>) -> Result<()> {
+        if ARGS.dry_run {
+            log::info!("Dry run enabled, not sending digest email");
+            return Ok(());
+        }
+
         let mailer = self.mailer().await?;
         let from: Mailbox = self.from.parse().context("Could not parse from email")?;
         let subject = format!(
@@ -89,6 +94,27 @@ impl Email {
         nextcloud_data: NextcloudData,
         members: Vec<Member>,
     ) -> Result<usize> {
+        let oldie_template = if let Some(template_name) = ARGS.send_mail_to_oldies.as_ref() {
+            match nextcloud_data
+                .templates
+                .iter()
+                .find(|template| &template.name == template_name)
+            {
+                None => panic!(
+                    "Could not find template with name \"{template_name}\". Available templates:\n{}",
+                    nextcloud_data
+                        .templates
+                        .iter()
+                        .map(|template| format!("* \"{}\"", template.name))
+                        .collect::<Vec<_>>()
+                        .join("\n")
+                ),
+                Some(template) => Some(template),
+            }
+        } else {
+            None
+        };
+
         let mailer = self.mailer().await?;
 
         let to_overwrite: Option<Mailbox> = match self.to_overwrite.as_ref() {
@@ -131,8 +157,7 @@ impl Email {
 
             for template in &nextcloud_data.templates {
                 if today == start_at + template.duration
-                    || (Some(&template.name) == ARGS.send_mail_to_oldies.as_ref()
-                        && today >= start_at + template.duration)
+                    || (Some(template) == oldie_template && today >= start_at + template.duration)
                 {
                     log::info!(
                         "Sending email to {} with template \"{}\"",
