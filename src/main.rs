@@ -4,6 +4,7 @@ use anyhow::Context;
 use config::CONFIG;
 use env_logger::Env;
 
+mod args;
 mod cleverreach;
 mod config;
 mod email;

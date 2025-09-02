@@ -1,4 +1,4 @@
-use crate::{cleverreach::Member, config::CONFIG, nextcloud::NextcloudData};
+use crate::{args::ARGS, cleverreach::Member, config::CONFIG, nextcloud::NextcloudData};
 use anyhow::{Context, Result};
 use lettre::{
     AsyncSmtpTransport, AsyncTransport, Tokio1Executor,
@@ -130,7 +130,10 @@ impl Email {
             );
 
             for template in &nextcloud_data.templates {
-                if today == start_at + template.duration {
+                if today == start_at + template.duration
+                    || (Some(&template.name) == ARGS.send_mail_to_oldies.as_ref()
+                        && today >= start_at + template.duration)
+                {
                     log::info!(
                         "Sending email to {} with template \"{}\"",
                         member.email,
@@ -151,6 +154,11 @@ impl Email {
                         }
                     };
 
+                    if ARGS.dry_run {
+                        log::info!("Dry run enabled, not sending email to {to}");
+                        count += 1;
+                        continue;
+                    }
                     match mailer.send(email).await {
                         Ok(_) => {
                             log::info!("Email sent to {to}");
