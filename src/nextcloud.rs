@@ -114,7 +114,7 @@ impl Nextcloud {
             "Templates:\n\t{}",
             templates
                 .iter()
-                .map(|t| format!("{}: {}", t.duration_str, t.subject))
+                .map(|t| format!("{} - {}", t.duration_str, t.subject))
                 .collect::<Vec<_>>()
                 .join("\n\t")
         );
