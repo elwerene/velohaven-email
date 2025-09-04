@@ -71,7 +71,8 @@ impl Nextcloud {
                 };
                 let name = name.url_decode();
                 let mut parts = name.split('-');
-                let Some(duration_str) = parts.next() else {
+                let Some(duration_str) = parts.next().map(|duration_str| duration_str.trim())
+                else {
                     log::error!("Could not get duration from name {name}");
                     continue;
                 };
@@ -88,11 +89,10 @@ impl Nextcloud {
                         }
                     },
                 };
-                let Some(subject) = parts.next() else {
+                let Some(subject) = parts.next().map(|subject| subject.trim().to_string()) else {
                     log::error!("Could not get subject from name {name}");
                     continue;
                 };
-                let subject = subject.trim().to_string();
                 let body = client
                     .get(&format!("templates/{name}.html"))
                     .await
