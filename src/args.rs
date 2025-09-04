@@ -6,8 +6,8 @@ pub static ARGS: Lazy<Args> = Lazy::new(Args::parse);
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
 pub struct Args {
-    /// Send email with given name to everyone who should have received it in the past.
-    /// Should be used to send a email manually if it was added later.
+    /// Send email with given template to everyone who should have received it in the past.
+    /// Should be used to send an email manually if a template was added later.
     #[arg(short, long, value_name = "TEMPLATE_NAME")]
     pub send_mail_to_oldies: Option<String>,
 
