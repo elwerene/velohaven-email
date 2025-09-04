@@ -156,7 +156,7 @@ impl Email {
             );
 
             for template in &nextcloud_data.templates {
-                if today == start_at + template.duration
+                if (oldie_template.is_none() && today == start_at + template.duration)
                     || (Some(template) == oldie_template && today >= start_at + template.duration)
                 {
                     log::info!(
